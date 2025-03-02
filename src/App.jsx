@@ -1,5 +1,6 @@
 import { createTheme, responsiveFontSizes, ThemeProvider } from '@mui/material';
 import MainScreen from './page/MainScreen';
+import Header from './page/MainScreen/components/layout/Header';
 
 // const theme = createTheme({
 //     palette: {
@@ -25,9 +26,9 @@ function App() {
         // <ThemeProvider theme={theme}>
         //     <MainScreen></MainScreen>
         // </ThemeProvider>
-        <>
+        <Header>
             <MainScreen></MainScreen>
-        </>
+        </Header>
     );
 }
 
