@@ -4,7 +4,7 @@ function Header({ children }) {
     return (
         <Box>
             <Box bgcolor={'#04ddb2'} paddingY={2} display={'flex'} alignItems={'center'} justifyContent={'center'}>
-                <Typography variant="h4" fontWeight={700} marginBottom={0}>
+                <Typography variant="h4" fontWeight={700} color={'#fff'}>
                     Shorter Links
                 </Typography>
             </Box>
