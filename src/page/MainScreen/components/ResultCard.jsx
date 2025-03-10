@@ -1,10 +1,11 @@
-import { Box, Button, Grid2, IconButton, Snackbar, Typography } from '@mui/material';
-import { makeStyles } from '@mui/styles';
-import Utils from '../../../utils';
 import { useState } from 'react';
+import { Box, Button, Grid2, IconButton, Snackbar, Typography } from '@mui/material';
+import { makeStyles } from 'tss-react/mui';
 import CloseIcon from '@mui/icons-material/Close';
 
-const useStyles = makeStyles(() => ({
+import Utils from '../../../utils';
+
+const useStyles = makeStyles()((theme, _params, classes) => ({
     multilineEllipsis: {
         display: '-webkit-box',
         WebkitBoxOrient: 'vertical',
@@ -12,11 +13,11 @@ const useStyles = makeStyles(() => ({
         textOverflow: 'ellipsis',
         WebkitLineClamp: 2,
     },
-    button: {
+    copyBtn: {
         borderRadius: 8,
-        background: '#fc0349',
-        width: '100%',
+        backgroundColor: '#fc0349',
         color: '#fff',
+        width: '100%',
     },
     gridItem: {
         display: 'flex',
@@ -28,7 +29,7 @@ const useStyles = makeStyles(() => ({
 }));
 
 function ResultCard({ result }) {
-    const classes = useStyles();
+    const { classes } = useStyles();
     const [open, setOpen] = useState(false);
 
     const handleCopy = () => {
@@ -58,7 +59,7 @@ function ResultCard({ result }) {
                 </Grid2>
 
                 <Grid2 size={1} className={classes.gridItem}>
-                    <Button onClick={handleCopy} className={classes.button}>
+                    <Button onClick={handleCopy} className={classes.copyBtn}>
                         Copy
                     </Button>
                 </Grid2>
@@ -69,7 +70,7 @@ function ResultCard({ result }) {
                     message="Copied to clipboard"
                     action={
                         <IconButton onClick={handleClose}>
-                            <CloseIcon color="#fff" />
+                            <CloseIcon color="primary" />
                         </IconButton>
                     }
                 />

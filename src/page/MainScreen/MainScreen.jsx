@@ -1,20 +1,76 @@
 import { Box, Divider, Grid2, TextField, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
 import { useEffect, useState } from 'react';
-import { makeStyles } from '@mui/styles';
+import { makeStyles } from 'tss-react/mui';
 import axios from 'axios';
 
 import Constant from '../../data/constant';
 import ResultCard from './components/ResultCard';
 
-const useStyles = makeStyles(() => ({
+const useStyles = makeStyles()((theme, _params, classes) => ({
+    wrapper: {
+        display: 'flex',
+        flexDirection: 'column',
+        gap: 4,
+        boxSizing: 'border-box',
+    },
+    leftContainer: {
+        display: 'flex',
+        paddingBottom: 64,
+        paddingTop: 64,
+        paddingLeft: 128,
+        paddingRight: 128,
+        justifyContent: 'space-between',
+    },
+    rightContainer: {
+        backgroundColor: '#f1eeee',
+        paddingLeft: 128,
+        paddingRight: 128,
+    },
+    inputContainer: {
+        padding: 24,
+        backgroundColor: '#3b3055',
+        borderRadius: 16,
+        gap: 16,
+        display: 'flex',
+    },
+    inputTextField: {
+        borderRadius: 8,
+        background: '#fff',
+        '& fieldset': {
+            borderRadius: 8,
+        },
+        '& .MuiInputBase-input:-webkit-autofill': {
+            borderRadius: 8,
+        },
+    },
+    secondContainer: {
+        paddingRight: 128,
+        paddingLeft: 128,
+    },
+    btn: {
+        borderRadius: 8,
+        backgroundColor: '#04ddb2',
+        minWidth: 160,
+    },
+    clearBtn: {
+        color: '#fff',
+        backgroundColor: '#fc0349',
+    },
     listHeader: {
-        marginBottom: 14,
         marginTop: 16,
         fontWeight: 700,
     },
     gridContainer: {
         marginBottom: 16,
+    },
+    poster: {
+        width: '40%',
+        height: '50%',
+    },
+    divider: {
+        marginBottom: 16,
+        marginTop: 8,
     },
 }));
 
@@ -22,8 +78,7 @@ function MainScreen() {
     const [newUrl, setNewUrl] = useState([]); // bring into state
     const [url, setUrl] = useState(''); // bring into state
     const [loading, setLoading] = useState(false);
-    const classes = useStyles();
-    const process = import.meta.env;
+    const { classes, cx } = useStyles();
 
     useEffect(() => {
         const items = localStorage.getItem('items');
@@ -66,9 +121,10 @@ function MainScreen() {
 
                     setNewUrl((prevData) => {
                         const data = [historyItem, ...prevData];
+
+                        localStorage.setItem('items', JSON.stringify(data)); // store in local storage
                         return data;
                     });
-                    localStorage.setItem('items', JSON.stringify(newUrl)); // store in local storage
                 });
         } catch (e) {
             console.log('error:', e);
@@ -76,9 +132,16 @@ function MainScreen() {
         }
     };
 
+    const handleClearHistory = () => {
+        if (history.length > 0) {
+            setNewUrl([]);
+            localStorage.removeItem('items');
+        }
+    };
+
     return (
-        <Box display={'flex'} flexDirection={'column'} gap={4} boxSizing={'border-box'}>
-            <Box display={'flex'} paddingX={16} paddingY={8} justifyContent={'space-between'}>
+        <Box className={classes.wrapper}>
+            <Box className={classes.leftContainer}>
                 <Box gap={16} width={'40%'}>
                     <Typography variant="h2" fontWeight={700} marginBottom={0}>
                         More than just shorter links
@@ -104,70 +167,68 @@ function MainScreen() {
                     src="https://www.appealscentre.eu/wp-content/uploads/2024/07/Group-271.png"
                     alt="?"
                     loading="lazy"
-                    width={'40%'}
+                    className={classes.poster}
                 />
             </Box>
-            <Box bgcolor={'#f1eeee'} paddingY={4} paddingX={16} position={'relative'}>
-                <Box position={'absolute'} top={-(16 * 6) / 2} left={0} right={0} paddingX={16}>
-                    <Box padding={3} bgcolor={'#3b3055'} borderRadius={4} gap={2} display={'flex'}>
-                        <TextField
-                            id="outlined-basic"
-                            variant="outlined"
-                            placeholder="Shorten a link here ..."
-                            fullWidth
-                            size="small"
-                            sx={{
-                                borderRadius: 2,
-                                background: '#fff',
-                                '& fieldset': {
-                                    borderRadius: 2,
-                                },
-                            }}
-                            onChange={(e) => setUrl(e.target.value)}
-                        />
-                        <Button
-                            variant="contained"
-                            sx={{
-                                borderRadius: 2,
-                                background: '#04ddb2',
-                                minWidth: 160,
-                            }}
-                            disableElevation
-                            onClick={handleSubmit}
-                        >
-                            Shorten it!
+            <Box className={classes.secondContainer}>
+                <Box className={classes.inputContainer}>
+                    <TextField
+                        id="outlined-basic"
+                        variant="outlined"
+                        placeholder="Shorten a link here ..."
+                        fullWidth
+                        size="small"
+                        className={classes.inputTextField}
+                        onChange={(e) => setUrl(e.target.value)}
+                    />
+                    <Button
+                        variant="contained"
+                        className={classes.btn}
+                        disableElevation
+                        onClick={handleSubmit}
+                        loading={loading}
+                    >
+                        Shorten it!
+                    </Button>
+
+                    {newUrl.length > 0 ? (
+                        <Button onClick={handleClearHistory} className={cx(classes.btn, classes.clearBtn)}>
+                            Clear History
                         </Button>
-                    </Box>
-
-                    {newUrl.length != 0 ? (
-                        <Box>
-                            <Grid2 container spacing={3}>
-                                <Grid2 size={5}>
-                                    <Typography variant="h6" className={classes.listHeader}>
-                                        Original URL
-                                    </Typography>
-                                </Grid2>
-
-                                <Grid2 size={3}>
-                                    <Typography variant="h6" className={classes.listHeader}>
-                                        Short URL
-                                    </Typography>
-                                </Grid2>
-
-                                <Grid2 size={3}>
-                                    <Typography variant="h6" className={classes.listHeader}>
-                                        Date
-                                    </Typography>
-                                </Grid2>
-
-                                <Grid2 size={1}>
-                                    <Typography variant="h6" className={classes.listHeader}>
-                                        Action
-                                    </Typography>
-                                </Grid2>
-                            </Grid2>
-                        </Box>
                     ) : null}
+                </Box>
+            </Box>
+            {newUrl.length == 0 ? <Box paddingBottom={4}></Box> : null}
+            {newUrl.length != 0 ? (
+                <Box className={classes.rightContainer}>
+                    <Box>
+                        <Grid2 container spacing={3}>
+                            <Grid2 size={5}>
+                                <Typography variant="h6" className={classes.listHeader}>
+                                    Original URL
+                                </Typography>
+                            </Grid2>
+
+                            <Grid2 size={3}>
+                                <Typography variant="h6" className={classes.listHeader}>
+                                    Short URL
+                                </Typography>
+                            </Grid2>
+
+                            <Grid2 size={3}>
+                                <Typography variant="h6" className={classes.listHeader}>
+                                    Date
+                                </Typography>
+                            </Grid2>
+
+                            <Grid2 size={1}>
+                                <Typography variant="h6" className={classes.listHeader}>
+                                    Action
+                                </Typography>
+                            </Grid2>
+                        </Grid2>
+                        <Divider className={classes.divider} />
+                    </Box>
 
                     <Box>
                         {newUrl.map((value, index) => {
@@ -180,7 +241,7 @@ function MainScreen() {
                         })}
                     </Box>
                 </Box>
-            </Box>
+            ) : null}
         </Box>
     );
 }
