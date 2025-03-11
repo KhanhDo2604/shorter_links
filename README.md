@@ -1,5 +1,6 @@
 # Shorter Links
 ![example1](https://github.com/user-attachments/assets/a17b0c30-8a38-49d0-a23f-5df728e7993d)
+---
 ![example2](https://github.com/user-attachments/assets/7996c76e-2a6d-4fcf-9d91-ecb498002686)
 
 ## Overview
