@@ -1,11 +1,9 @@
 import { Box, Divider, Grid2, TextField, Typography } from '@mui/material';
 import Button from '@mui/material/Button';
-import { useEffect, useState } from 'react';
 import { makeStyles } from 'tss-react/mui';
-import axios from 'axios';
 
-import Constant from '../../data/constant';
-import ResultCard from './components/ResultCard';
+import { useUrl } from '../../context/AppContext';
+import ResultCard from '../../components/ResultCard';
 
 const useStyles = makeStyles()((theme, _params, classes) => ({
     wrapper: {
@@ -75,68 +73,14 @@ const useStyles = makeStyles()((theme, _params, classes) => ({
 }));
 
 function MainScreen() {
-    const [newUrl, setNewUrl] = useState([]); // bring into state
-    const [url, setUrl] = useState(''); // bring into state
-    const [loading, setLoading] = useState(false);
     const { classes, cx } = useStyles();
-
-    useEffect(() => {
-        const items = localStorage.getItem('items');
-        if (items) {
-            setNewUrl(JSON.parse(items));
-        }
-    }, []);
+    const { newUrl, url, loading, setUrl, postUrl, clearHistory } = useUrl(); // replace with context
 
     const handleSubmit = async (event) => {
         event.preventDefault();
 
         const formattedUrl = /^(https?|ftp):\/\//i.test(url) ? url : `http://${url}`;
-
-        try {
-            setLoading(true);
-            await axios
-                .post(
-                    `${Constant.url}/create`,
-                    {
-                        url: formattedUrl,
-                        domain: 'tinyurl.com',
-                        expires_at: null,
-                        description: 'string',
-                    },
-                    {
-                        headers: {
-                            'Content-Type': 'application/json',
-                            Authorization: `Bearer ${import.meta.env.VITE_API_TOKEN}`,
-                        },
-                    },
-                )
-                .then((res) => {
-                    setLoading(false);
-
-                    const historyItem = {
-                        originalUrl: url,
-                        shortUrl: res.data['data']['tiny_url'],
-                        createdAt: res.data['data']['created_at'],
-                    };
-
-                    setNewUrl((prevData) => {
-                        const data = [historyItem, ...prevData];
-
-                        localStorage.setItem('items', JSON.stringify(data)); // store in local storage
-                        return data;
-                    });
-                });
-        } catch (e) {
-            console.log('error:', e);
-            setLoading(false);
-        }
-    };
-
-    const handleClearHistory = () => {
-        if (history.length > 0) {
-            setNewUrl([]);
-            localStorage.removeItem('items');
-        }
+        postUrl(formattedUrl);
     };
 
     return (
@@ -192,7 +136,7 @@ function MainScreen() {
                     </Button>
 
                     {newUrl.length > 0 ? (
-                        <Button onClick={handleClearHistory} className={cx(classes.btn, classes.clearBtn)}>
+                        <Button onClick={clearHistory} className={cx(classes.btn, classes.clearBtn)}>
                             Clear History
                         </Button>
                     ) : null}

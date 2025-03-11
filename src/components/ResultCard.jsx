@@ -3,7 +3,7 @@ import { Box, Button, Grid2, IconButton, Snackbar, Typography } from '@mui/mater
 import { makeStyles } from 'tss-react/mui';
 import CloseIcon from '@mui/icons-material/Close';
 
-import Utils from '../../../utils';
+import Utils from '../utils';
 
 const useStyles = makeStyles()((theme, _params, classes) => ({
     multilineEllipsis: {
